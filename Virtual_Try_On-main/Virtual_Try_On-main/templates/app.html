@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Try-On | Lume Wear</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-orange: #f36a22;
+            --primary-purple: #592879;
+            --light-bg: #f8f9fa;
+            --text-dark: #333;
+            --text-light: #6c757d;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.12);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.16);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        /* Hero Section */
+        .hero-section {
+            background: url('https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80') no-repeat center center;
+            background-size: cover;
+            color: white;
+            padding: 150px;
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-section h1 {
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            font-size: 3rem;
+        }
+        
+        .hero-section p {
+            font-weight: 300;
+            font-size: 1.25rem;
+            max-width: 700px;
+            text-shadow: 0 2px 4px rgba(255, 255, 255, 0.2);
+            margin: 0 auto 30px;
+            opacity: 0.9;
+        }
+        
+        /* Main Container */
+        .main-container {
+            position: relative;
+            z-index: 1;
+            margin-top: 50px;
+        }
+        
+        /* Cards */
+        .upload-card, .result-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            padding: 30px;
+            margin-bottom: 30px;
+            border: none;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .upload-card:hover, .result-section:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+        
+        /* Preview Containers */
+        .preview-container {
+            border: 2px dashed #e9ecef;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            background-color: #fafafa;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        
+        .preview-container:hover {
+            border-color: var(--primary-orange);
+            background-color: #fff;
+        }
+        
+        .preview-container.dragover {
+            border-color: var(--primary-purple);
+            background-color: rgba(89, 40, 121, 0.05);
+        }
+        
+        .preview-img {
+            max-width: 100%;
+            max-height: 250px;
+            border-radius: 8px;
+            object-fit: contain;
+            display: none;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .upload-icon {
+            font-size: 3.5rem;
+            color: var(--primary-orange);
+            margin-bottom: 15px;
+            opacity: 0.8;
+            transition: var(--transition);
+        }
+        
+        .preview-container:hover .upload-icon {
+            transform: scale(1.1);
+            opacity: 1;
+        }
+        
+        /* Buttons */
+        .btn-tryon {
+            background-color: var(--primary-orange);
+            color: white;
+            padding: 14px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            border: none;
+            transition: var(--transition);
+            width: 100%;
+            margin-top: 20px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(243, 106, 34, 0.3);
+        }
+        
+        .btn-tryon:hover {
+            background-color: var(--primary-purple);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(89, 40, 121, 0.3);
+        }
+        
+        .btn-tryon:active {
+            transform: translateY(1px);
+        }
+        
+        .btn-outline-secondary {
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .btn-outline-secondary:hover {
+            background-color: rgba(243, 106, 34, 0.1);
+            border-color: var(--primary-orange);
+            color: var(--primary-orange);
+        }
+        
+        /* Gallery Section - Enhanced Models Layout */
+        .gallery-section {
+            margin: 40px 0;
+        }
+        
+        .gallery-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            margin-bottom: 20px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            position: relative;
+        }
+        
+        .gallery-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(243, 106, 34, 0.3);
+        }
+        
+        .gallery-card.selected {
+            border-color: var(--primary-purple);
+            box-shadow: 0 0 0 3px rgba(89, 40, 121, 0.1);
+        }
+        
+        .gallery-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+        
+        .gallery-card:hover .gallery-img {
+            transform: scale(1.03);
+        }
+        
+        .clothing-img {
+            width: 100%;
+            height: 180px;
+            object-fit: contain;
+            background-color: #fafafa;
+            padding: 20px;
+            transition: var(--transition);
+        }
+        
+        .gallery-card:hover .clothing-img {
+            transform: scale(1.05);
+        }
+        
+        /* Model Badge */
+        .model-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--primary-orange);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        /* Typography */
+        .section-title {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 30px;
+            color: var(--primary-purple);
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+        
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            width: 50px;
+            height: 4px;
+            background: var(--primary-orange);
+            border-radius: 2px;
+            transition: var(--transition);
+        }
+        
+        .section-title:hover::after {
+            width: 70px;
+        }
+        
+        /* Tabs */
+        .tab-content {
+            padding: 20px 0;
+        }
+        
+        .nav-tabs {
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--text-dark);
+            font-weight: 500;
+            border: none;
+            padding: 12px 20px;
+            position: relative;
+            transition: var(--transition);
+            margin-right: 5px;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .nav-tabs .nav-link:hover {
+            color: var(--primary-orange);
+            background-color: rgba(243, 106, 34, 0.05);
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--primary-orange);
+            background-color: rgba(243, 106, 34, 0.05);
+            border-bottom: 3px solid var(--primary-orange);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            color: var(--text-light);
+            font-style: italic;
+            transition: var(--transition);
+        }
+        
+        /* Result Section - Enhanced */
+        .result-section {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .result-img-container {
+            position: relative;
+            display: inline-block;
+            max-width: 100%;
+            margin-bottom: 25px;
+        }
+        
+        .result-img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid #eee;
+            transition: var(--transition);
+        }
+        
+        .result-img-container:hover .result-img {
+            transform: scale(1.02);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+        
+        .download-btn {
+            background-color: var(--primary-purple);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            border: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(89, 40, 121, 0.3);
+        }
+        
+        .download-btn:hover {
+            background-color: var(--primary-orange);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(243, 106, 34, 0.3);
+        }
+        
+        .download-btn i {
+            margin-right: 8px;
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .hero-section {
+                padding: 80px 0;
+            }
+            
+            .preview-container {
+                min-height: 240px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 60px 0;
+            }
+            
+            .hero-section h1 {
+                font-size: 2.2rem;
+            }
+            
+            .hero-section p {
+                font-size: 1.1rem;
+            }
+            
+            .section-title {
+                font-size: 1.3rem;
+            }
+            
+            .upload-card, .result-section {
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .hero-section {
+                padding: 50px 0;
+            }
+            
+            .hero-section h1 {
+                font-size: 1.8rem;
+            }
+            
+            .preview-container {
+                min-height: 200px;
+                padding: 15px;
+            }
+            
+            .btn-tryon {
+                padding: 12px 20px;
+                font-size: 0.8rem;
+            }
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        
+        /* Loading Spinner */
+        .spinner-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.8);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(243, 106, 34, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary-orange);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+
+    </style>
+</head>
+<body>
+    {%include 'header.html'%}
+
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container hero-content">
+            <h1 class="display-4 fw-bold mb-3">Virtual Try-On</h1>
+            <p class="lead">Experience fashion like never before with our AI-powered virtual fitting room</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container main-container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="upload-card fade-in">
+                    <h3 class="section-title">Create Your Look</h3>
+                    
+                    <form id="uploadForm" action="{{ url_for('virtual_tryon') }}" method="post" enctype="multipart/form-data">
+                        <div class="row">
+                            <!-- Person Image Upload -->
+                            <div class="col-md-6 mb-4 mb-md-0">
+                                <div class="preview-container" id="personPreviewContainer">
+                                    <i class="fas fa-user upload-icon"></i>
+                                    <p class="empty-state">Upload your photo or select a model below</p>
+                                    <img id="personPreview" class="preview-img">
+                                    <input type="file" class="form-control mt-3" id="personImage" name="person_image" accept="image/*" style="display: none;">
+                                    <button type="button" class="btn btn-outline-secondary mt-3" onclick="document.getElementById('personImage').click()">
+                                        <i class="fas fa-upload me-2"></i>Upload Photo
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Garment Image Upload -->
+                            <div class="col-md-6">
+                                <div class="preview-container" id="garmentPreviewContainer">
+                                    <i class="fas fa-tshirt upload-icon"></i>
+                                    <p class="empty-state">Upload clothing or select from samples</p>
+                                    <img id="garmentPreview" class="preview-img">
+                                    <input type="file" class="form-control mt-3" id="garmentImage" name="garment_image" accept="image/*" style="display: none;">
+                                    <button type="button" class="btn btn-outline-secondary mt-3" onclick="document.getElementById('garmentImage').click()">
+                                        <i class="fas fa-upload me-2"></i>Upload Clothing
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-tryon">
+                            <i class="fas fa-magic me-2"></i> Generate Virtual Try-On
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Result Section - Enhanced -->
+                {% if result_url %}
+                <div class="result-section fade-in">
+                    <h3 class="section-title">Your Virtual Outfit</h3>
+                    <div class="result-img-container">
+                        <img src="{{ result_url }}" alt="Try-On Result" class="img-fluid result-img">
+                    </div>
+                    <button class="download-btn">
+                        <i class="fas fa-download me-2"></i>Download Image
+                    </button>
+                </div>
+                {% endif %}
+                
+                {% if error %}
+                <div class="alert alert-danger mt-4 text-center fade-in">
+                    <strong>Error:</strong> {{ error }}
+                    <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Sample Gallery - Enhanced Models Layout -->
+            <div class="col-lg-4">
+                <ul class="nav nav-tabs" id="galleryTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="models-tab" data-bs-toggle="tab" data-bs-target="#models" type="button" role="tab">
+                            <i class="fas fa-user-friends me-2"></i>Model Gallery
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="clothes-tab" data-bs-toggle="tab" data-bs-target="#clothes" type="button" role="tab">
+                            <i class="fas fa-tshirt me-2"></i>Fashion Collection
+                        </button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content bg-white p-3 rounded-bottom shadow-sm">
+                    <!-- Sample Models - Enhanced Layout -->
+                    <div class="tab-pane fade show active" id="models" role="tabpanel">
+                        <div class="row">
+                            <!-- Model 1 -->
+                            <div class="col-md-6 col-12 mb-3">
+                                <div class="gallery-card" onclick="selectModel('https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=764&q=80', this)">
+                                    <span class="model-badge">Model</span>
+                                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=764&q=80" class="gallery-img" alt="Model 1">
+                                    <div class="p-3">
+                                        <h6 class="mb-1">Elena</h6>
+                                        <small class="text-muted">Full body pose</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Model 2 -->
+                            <div class="col-md-6 col-12 mb-3">
+                                <div class="gallery-card" onclick="selectModel('https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80', this)">
+                                    <span class="model-badge">Model</span>
+                                    <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80" class="gallery-img" alt="Model 2">
+                                    <div class="p-3">
+                                        <h6 class="mb-1">Sophia</h6>
+                                        <small class="text-muted">Side pose</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Model 3 -->
+                            <div class="col-md-6 col-12 mb-3">
+                                <div class="gallery-card" onclick="selectModel('https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80', this)">
+                                    <span class="model-badge">Model</span>
+                                    <img src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80" class="gallery-img" alt="Model 3">
+                                    <div class="p-3">
+                                        <h6 class="mb-1">Isabella</h6>
+                                        <small class="text-muted">Front pose</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Model 4 -->
+                            <div class="col-md-6 col-12 mb-3">
+                                <div class="gallery-card" onclick="selectModel('https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80', this)">
+                                    <span class="model-badge">Model</span>
+                                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" class="gallery-img" alt="Model 4">
+                                    <div class="p-3">
+                                        <h6 class="mb-1">Olivia</h6>
+                                        <small class="text-muted">Smiling pose</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sample Clothes -->
+                    <div class="tab-pane fade" id="clothes" role="tabpanel">
+                        <div class="row">
+                            <!-- Dress 1 -->
+                            <div class="col-md-6 col-12 mb-3">
+                                <div class="gallery-card" onclick="selectClothing('https://images.unsplash.com/photo-1551232864-3f0890e580d9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80', this)">
+                                    <img src="https://images.unsplash.com/photo-1551232864-3f0890e580d9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80" class="clothing-img" alt="Dress 1">
+                                    <div class="p-3">
+                                        <h6 class="mb-1">Floral Summer Dress</h6>
+                                        <small class="text-muted">$49.99</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Dress 2 -->
+                            <div class="col-md-6 col-12 mb-3">
+                                <div class="gallery-card" onclick="selectClothing('https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=736&q=80', this)">
+                                    <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=736&q=80" class="clothing-img" alt="Dress 2">
+                                    <div class="p-3">
+                                        <h6 class="mb-1">Evening Gown</h6>
+                                        <small class="text-muted">$89.99</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Shirt 1 -->
+                            <div class="col-md-6 col-12 mb-3">
+                                <div class="gallery-card" onclick="selectClothing('https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=734&q=80', this)">
+                                    <img src="https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=734&q=80" class="clothing-img" alt="Shirt 1">
+                                    <div class="p-3">
+                                        <h6 class="mb-1">Casual T-Shirt</h6>
+                                        <small class="text-muted">$24.99</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Shirt 2 -->
+                            <div class="col-md-6 col-12 mb-3">
+                                <div class="gallery-card" onclick="selectClothing('https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=749&q=80', this)">
+                                    <img src="https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=749&q=80" class="clothing-img" alt="Shirt 2">
+                                    <div class="p-3">
+                                        <h6 class="mb-1">Formal Shirt</h6>
+                                        <small class="text-muted">$39.99</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="spinner-container" id="spinner">
+        <div class="spinner"></div>
+    </div>
+
+   
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Preview uploaded images
+        function previewImage(input, previewId) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const preview = document.getElementById(previewId);
+                    const container = document.getElementById(previewId + 'Container');
+                    
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    
+                    // Hide empty state elements
+                    container.querySelector('.empty-state').style.display = 'none';
+                    container.querySelector('.upload-icon').style.display = 'none';
+                    
+                    // Clear any previous selections in the gallery
+                    clearSelections(previewId.includes('person') ? 'model' : 'clothing');
+                    
+                    // Add fade-in effect
+                    preview.classList.add('fade-in');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Select a model from the gallery
+        function selectModel(imageUrl, element) {
+            const preview = document.getElementById('personPreview');
+            const container = document.getElementById('personPreviewContainer');
+            
+            preview.src = imageUrl;
+            preview.style.display = 'block';
+            
+            // Hide empty state elements
+            container.querySelector('.empty-state').style.display = 'none';
+            container.querySelector('.upload-icon').style.display = 'none';
+            
+            // Clear file input
+            document.getElementById('personImage').value = '';
+            
+            // Update gallery selection
+            clearSelections('model');
+            element.classList.add('selected');
+            
+            // Add fade-in effect
+            preview.classList.add('fade-in');
+            
+            // Scroll to preview container
+            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Select clothing from the gallery
+        function selectClothing(imageUrl, element) {
+            const preview = document.getElementById('garmentPreview');
+            const container = document.getElementById('garmentPreviewContainer');
+            
+            preview.src = imageUrl;
+            preview.style.display = 'block';
+            
+            // Hide empty state elements
+            container.querySelector('.empty-state').style.display = 'none';
+            container.querySelector('.upload-icon').style.display = 'none';
+            
+            // Clear file input
+            document.getElementById('garmentImage').value = '';
+            
+            // Update gallery selection
+            clearSelections('clothing');
+            element.classList.add('selected');
+            
+            // Add fade-in effect
+            preview.classList.add('fade-in');
+            
+            // Scroll to preview container
+            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Clear previous selections in the gallery
+        function clearSelections(type) {
+            const selector = type === 'model' ? '#models .gallery-card' : '#clothes .gallery-card';
+            document.querySelectorAll(selector).forEach(card => {
+                card.classList.remove('selected');
+            });
+        }
+
+        // Drag and drop functionality
+        function setupDragDrop(containerId, inputId) {
+            const container = document.getElementById(containerId);
+            const input = document.getElementById(inputId);
+            
+            container.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                container.classList.add('dragover');
+            });
+            
+            container.addEventListener('dragleave', () => {
+                container.classList.remove('dragover');
+            });
+            
+            container.addEventListener('drop', (e) => {
+                e.preventDefault();
+                container.classList.remove('dragover');
+                
+                if (e.dataTransfer.files.length) {
+                    input.files = e.dataTransfer.files;
+                    const previewId = containerId.replace('Container', '');
+                    previewImage(input, previewId);
+                }
+            });
+        }
+
+        // Show loading spinner
+        function showLoading() {
+            document.getElementById('spinner').style.display = 'flex';
+        }
+
+        // Hide loading spinner
+        function hideLoading() {
+            document.getElementById('spinner').style.display = 'none';
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Event listeners for file inputs
+            document.getElementById("personImage").addEventListener("change", function () {
+                previewImage(this, "personPreview");
+            });
+
+            document.getElementById("garmentImage").addEventListener("change", function () {
+                previewImage(this, "garmentPreview");
+            });
+            
+            // Setup drag and drop
+            setupDragDrop('personPreviewContainer', 'personImage');
+            setupDragDrop('garmentPreviewContainer', 'garmentImage');
+            
+            // Form submission
+            document.getElementById('uploadForm').addEventListener('submit', function(e) {
+                const personPreview = document.getElementById('personPreview');
+                const garmentPreview = document.getElementById('garmentPreview');
+                
+                if (!personPreview.src || personPreview.style.display === 'none') {
+                    alert('Please upload or select a person image');
+                    e.preventDefault();
+                    return;
+                }
+                
+                if (!garmentPreview.src || garmentPreview.style.display === 'none') {
+                    alert('Please upload or select a clothing item');
+                    e.preventDefault();
+                    return;
+                }
+                
+                showLoading();
+            });
+            
+            // Show/hide FAB based on scroll position
+            window.addEventListener('scroll', function() {
+                const fab = document.querySelector('.fab');
+                if (window.pageYOffset > 300) {
+                    fab.style.display = 'flex';
+                } else {
+                    fab.style.display = 'none';
+                }
+            });
+            
+            // Download button functionality
+            const downloadBtn = document.querySelector('.download-btn');
+            if (downloadBtn) {
+                downloadBtn.addEventListener('click', function() {
+                    const resultImg = document.querySelector('.result-img');
+                    if (resultImg) {
+                        const link = document.createElement('a');
+                        link.href = resultImg.src;
+                        link.download = 'virtual-tryon-result.png';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

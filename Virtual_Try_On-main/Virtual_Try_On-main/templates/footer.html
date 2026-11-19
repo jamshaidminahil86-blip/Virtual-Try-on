@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Header </title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
+    <link rel="short-cut icon" href="icon1.png">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>    <footer class="py-4">
+    <div class="container">
+        <!-- Logo -->
+        <div class="row">
+            <div class="col-md-3">
+                <div class="mb-3">
+                    <img src="{{url_for('static',filename='img/logo_enhanced.png')}}" alt="Logo" width="210" style="margin-left: -15px;">
+                    <p>Lume Wear – Experience the <br>future of fashion with AI <br>powered virtual try-ons. <br>Try
+                        before you buy, effortlessly!</p>
+                </div>
+            </div>
+
+            <!-- Links -->
+
+            <div class="col-md-3 mb-3 text-left">
+                <h5>Quick Links</h5>
+                <ul class="list-unstyled">
+                    <li><a href="{{ url_for('index')}}">Home</a></li>
+                    <li><a href="{{ url_for('about')}}">About</a></li>
+                    <li><a href="{{ url_for('contact')}}">Contact</a></li>
+                    <li><a href="{{ url_for('features')}}">Features</a></li>
+                    <li><a href="#">How It Works</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 mb-3 text-left">
+                <h5>Customer Support</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">How to Use AI Try-On?</a></li>
+                    <li><a href="#">Supported Image Formats</a></li>
+                    <li><a href="#">Privacy & Data Protection</a></li>
+                    <li><a href="#">Feedback & Suggestions</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 mb-3 text-left">
+                <h5>Live Support</h5>
+                <p>Need help? Chat with our AI assistant 24/7.</p>
+                <button class="btn btn-primary">Start Live Chat</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="bottom-bar py-2 mt-3 border-top">
+        <div class="container text-center">
+            <p class="mb-2">&copy; 2025 LUME WEAR. All rights reserved.</p>
+            <div>
+                <a href="#" class="mx-2"><i class="fab fa-facebook fa-lg"></i></a>
+                <a href="#" class="mx-2"><i class="fab fa-tiktok fa-lg"></i></a>
+                <a href="#" class="mx-2"><i class="fab fa-linkedin fa-lg"></i></a>
+                <a href="#" class="mx-2"><i class="fab fa-instagram fa-lg"></i></a>
+                <a href="#" class="mx-2"><i class="fab fa-twitter fa-lg"></i></a>
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://kit.fontawesome.com/YOUR-KIT-ID.js" crossorigin="anonymous"></script>
+
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Javascript Js -->
+    <script src="{{ url_for('static', filename='anim.js')}}"></script>
+</body>
+</html>

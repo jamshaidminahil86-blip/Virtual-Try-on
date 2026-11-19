@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="flex">
+    <!-- Sidebar -->
+    <div class="w-64 bg-gray-800 text-white min-h-screen p-4 flex flex-col justify-between" style="background-color: #6600FF;">
+      <div>
+        <h2 class="text-2xl font-bold text-center">Dashboard</h2>
+        <ul class="mt-6 space-y-4">
+          <li class="flex items-center space-x-2 cursor-pointer">
+            <i class="mr-2"></i>
+            <span><a href="{{ url_for('user')}}">Users</a></span>
+          </li>
+          <li class="flex items-center space-x-2 cursor-pointer">
+            <i class="mr-2"></i>
+            <span><a href="{{ url_for('enhance')}}">Image Enhancer</a></span>
+          </li>
+          <li class="flex items-center space-x-2 cursor-pointer">
+            <i class="mr-2"></i>
+            <span><a href="{{ url_for('change')}}">Background Changer</a></span>
+          </li>
+          <li class="flex items-center space-x-2 cursor-pointer">
+            <i class="mr-2"></i>
+            <span><a href="{{ url_for('background')}}">Background Remover</a></span>
+          </li>
+        </ul>
+      </div>
+      <button class="flex items-center space-x-2 p-2 bg-red-500 rounded-lg w-full"><i class="mr-2"></i> <span>Logout</span></button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 p-6">
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold">Admin Dashboard</h1>
+        <div class="text-2xl font-bold">LOGO</div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- User Analytics -->
+        <div class="card bg-white p-4 rounded-lg shadow">
+          <div class="card-header">
+            <h2 class="card-title flex items-center"><i class="mr-2"></i> Users</h2>
+          </div>
+          <div class="card-content">
+            <p class="text-xl font-bold">1,250</p>
+            <button class="mt-2 w-full bg-blue-500 text-white py-2 px-4 rounded" style="background-color: #6600FF ;">View</button>
+          </div>
+        </div>
+
+        <!-- Image Enhancer Stats -->
+        <div class="card bg-white p-4 rounded-lg shadow">
+          <div class="card-header">
+            <h2 class="card-title flex items-center"><i class="mr-2"></i> Image Enhancer</h2>
+          </div>
+          <div class="card-content">
+            <p class="text-xl font-bold">7,500</p>
+            <button class="mt-2 w-full bg-blue-500 text-white py-2 px-4 rounded" style="background-color: #6600FF;">View</button>
+          </div>
+        </div>
+
+        <!-- Background Changer Stats -->
+        <div class="card bg-white p-4 rounded-lg shadow">
+          <div class="card-header">
+            <h2 class="card-title flex items-center"><i class="mr-2"></i> Background Changer</h2>
+          </div>
+          <div class="card-content">
+            <p class="text-xl font-bold">5,000</p>
+            <button class="mt-2 w-full bg-blue-500 text-white py-2 px-4 rounded" style="background-color: #6600FF;">View</button>
+          </div>
+        </div>
+
+        <!-- Background Remover Stats -->
+        <div class="card bg-white p-4 rounded-lg shadow">
+          <div class="card-header">
+            <h2 class="card-title flex items-center"><i class="mr-2"></i> Background Remover</h2>
+          </div>
+          <div class="card-content">
+            <p class="text-xl font-bold">3,200</p>
+            <button class="mt-2 w-full bg-blue-500 text-white py-2 px-4 rounded" style="background-color: #6600FF;">View</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+        <div class="card bg-white p-4 rounded-lg shadow">
+          <div class="card-header">
+            <h2 class="card-title">Image Background Changer</h2>
+          </div>
+          <div class="card-content">
+            <canvas id="userGrowthChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const BackgroundChanger= [
+      { name: "Jan", users: 10 },
+      { name: "Feb", users: 19 },
+      { name: "Mar", users: 33 },
+      { name: "Apr", users: 42 },
+      { name: "May", users: 29 },
+      { name: "Jun", users: 54 },
+      { name: "Jul", users: 89 },
+    ];
+
+    const ctx1 = document.getElementById('userGrowthChart').getContext('2d');
+    const userGrowthChart = new Chart(ctx1, {
+      type: 'line',
+      data: {
+        labels: BackgroundChanger.map(data => data.name),
+        datasets: [{
+          label: 'Background Changer',
+          data: BackgroundChanger.map(data => data.users),
+          borderColor: '#6600FF',
+          borderWidth: 2,
+          fill: false
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: { beginAtZero: true },
+          y: { beginAtZero: true }
+        }
+      }
+    });
+
+    
+  </script>
+</body>
+</html>

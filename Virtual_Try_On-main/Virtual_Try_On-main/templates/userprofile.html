@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <style>
+        :root {
+            --primary: #5E35B1;
+            --secondary: #3949AB;
+            --accent: #7C4DFF;
+            --success: #43A047;
+            --warning: #FB8C00;
+            --danger: #E53935;
+        }
+        
+        body {
+            background-color: #F5F7FA;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .progress-ring {
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+        
+        .tool-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+        }
+        
+        .activity-item {
+            transition: all 0.3s ease;
+        }
+        
+        .activity-item:hover {
+            transform: translateX(5px);
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .file-input-label {
+            display: block;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 4px solid white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .file-input-label:hover .profile-overlay {
+            opacity: 1;
+        }
+        
+        .profile-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        #profile-image-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        #profile-image-input {
+            display: none;
+        }
+    </style>
+</head>
+<body >
+    
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+    
+        
+        <!-- Main Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Column -->
+            <div class="lg:col-span-1 space-y-6">
+                <!-- Profile Card -->
+                <div class="glass-card rounded-2xl shadow-sm p-6">
+                    <div class="flex flex-col items-center">
+                        <div class="relative mb-4">
+                            <img id="current-profile-image" src="https://randomuser.me/api/portraits/women/44.jpg" alt="Profile" class="w-24 h-24 rounded-full border-4 border-white shadow-lg">
+                            <div class="absolute -bottom-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center">
+                                <i class="fas fa-crown mr-1"></i>
+                                PRO
+                            </div>
+                        </div>
+                        <h2 id="current-username" class="text-xl font-bold text-gray-800">Sarah Johnson</h2>
+                        <p id="current-user-title" class="text-gray-500 text-sm mb-4">Premium Member</p>
+                        
+                        <!-- Storage Indicator -->
+                        <div class="w-full mb-4">
+                            <div class="flex justify-between text-xs text-gray-500 mb-1">
+                                <span>Storage</span>
+                                <span id="storage-percent">75%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div id="storage-bar" class="bg-purple-600 h-2 rounded-full" style="width: 75%"></div>
+                            </div>
+                        </div>
+                        
+                        <button id="edit-profile-btn" class="w-full py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition flex items-center justify-center">
+                            <i class="fas fa-user-edit mr-2"></i> Edit Profile
+                        </button>
+                    </div>
+                </div>
+              
+                
+                <!-- Recent Activity -->
+                <div class="glass-card rounded-2xl shadow-sm p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">Recent Activity</h3>
+                        <span class="text-xs text-purple-600 flex items-center">
+                            <span class="pulse h-2 w-2 bg-purple-600 rounded-full mr-1"></span>
+                            Live
+                        </span>
+                    </div>
+                    <div class="space-y-4" id="activity-feed">
+                        <!-- Activities will be added here dynamically -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Stats Overview -->
+                <div class="glass-card rounded-2xl shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-6">Your Image Processing Stats</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- Enhance Stats -->
+                        <div class="bg-white p-4 rounded-xl shadow-xs border border-gray-100">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <div class="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center mb-3">
+                                        <i class="fas fa-magic text-purple-600"></i>
+                                    </div>
+                                    <h4 class="text-sm font-medium text-gray-500 mb-1">Enhanced</h4>
+                                    <p class="text-2xl font-bold text-gray-800" id="enhanced-count">1,248</p>
+                                </div>
+                                <span class="text-xs px-2 py-1 rounded-full bg-green-50 text-green-600" id="enhanced-change">
+                                    <i class="fas fa-arrow-up mr-1"></i>12%
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Remove BG Stats -->
+                        <div class="bg-white p-4 rounded-xl shadow-xs border border-gray-100">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center mb-3">
+                                        <i class="fas fa-eraser text-blue-600"></i>
+                                    </div>
+                                    <h4 class="text-sm font-medium text-gray-500 mb-1">BG Removed</h4>
+                                    <p class="text-2xl font-bold text-gray-800" id="removed-count">892</p>
+                                </div>
+                                <span class="text-xs px-2 py-1 rounded-full bg-green-50 text-green-600" id="removed-change">
+                                    <i class="fas fa-arrow-up mr-1"></i>8%
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Add BG Stats -->
+                        <div class="bg-white p-4 rounded-xl shadow-xs border border-gray-100">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <div class="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center mb-3">
+                                        <i class="fas fa-layer-group text-green-600"></i>
+                                    </div>
+                                    <h4 class="text-sm font-medium text-gray-500 mb-1">BG Added</h4>
+                                    <p class="text-2xl font-bold text-gray-800" id="added-count">567</p>
+                                </div>
+                                <span class="text-xs px-2 py-1 rounded-full bg-green-50 text-green-600" id="added-change">
+                                    <i class="fas fa-arrow-up mr-1"></i>15%
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Usage Charts -->
+                <div class="grid grid-cols-1 gap-6">
+                    <!-- Monthly Usage -->
+                    <div class="glass-card rounded-2xl shadow-sm p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold text-gray-800">Monthly Usage</h3>
+                            <div class="flex space-x-2">
+                                <button class="text-xs px-3 py-1 rounded-full bg-purple-50 text-purple-600">Month</button>
+                                <button class="text-xs px-3 py-1 rounded-full bg-gray-100 text-gray-600">Year</button>
+                            </div>
+                        </div>
+                        <canvas id="monthlyChart" height="250"></canvas>
+                    </div>
+                    
+                    <!-- Tool Distribution -->
+                    <div class="glass-card rounded-2xl shadow-sm p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold text-gray-800">Tool Distribution</h3>
+                            <span class="text-xs text-gray-500">Last 30 days</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <canvas id="distributionChart" height="250"></canvas>
+                            </div>
+                            <div class="flex flex-col justify-center">
+                                <div class="space-y-4">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 rounded-full bg-purple-600 mr-3"></div>
+                                        <div class="flex-1">
+                                            <div class="flex justify-between text-sm">
+                                                <span class="text-gray-700">Enhance</span>
+                                                <span class="font-medium" id="enhance-percent">48%</span>
+                                            </div>
+                                            <div class="w-full bg-gray-200 rounded-full h-1.5 mt-1">
+                                                <div class="bg-purple-600 h-1.5 rounded-full" id="enhance-bar" style="width: 48%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 rounded-full bg-blue-600 mr-3"></div>
+                                        <div class="flex-1">
+                                            <div class="flex justify-between text-sm">
+                                                <span class="text-gray-700">Remove BG</span>
+                                                <span class="font-medium" id="remove-percent">32%</span>
+                                            </div>
+                                            <div class="w-full bg-gray-200 rounded-full h-1.5 mt-1">
+                                                <div class="bg-blue-600 h-1.5 rounded-full" id="remove-bar" style="width: 32%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 rounded-full bg-green-600 mr-3"></div>
+                                        <div class="flex-1">
+                                            <div class="flex justify-between text-sm">
+                                                <span class="text-gray-700">Add BG</span>
+                                                <span class="font-medium" id="add-percent">20%</span>
+                                            </div>
+                                            <div class="w-full bg-gray-200 rounded-full h-1.5 mt-1">
+                                                <div class="bg-green-600 h-1.5 rounded-full" id="add-bar" style="width: 20%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="edit-profile-modal" class="modal">
+        <div class="modal-content">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-800">Edit Profile</h3>
+                    <button id="close-modal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <form id="profile-form">
+                    <div class="mb-6">
+                        <label for="profile-image-input" class="file-input-label">
+                            <img id="profile-image-preview" src="https://randomuser.me/api/portraits/women/44.jpg" alt="Profile Preview">
+                            <div class="profile-overlay">
+                                <i class="fas fa-camera text-white text-2xl"></i>
+                            </div>
+                        </label>
+                        <input type="file" id="profile-image-input" accept="image/*">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                        <input type="text" id="username" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent" value="Sarah Johnson">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                        <input type="email" id="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent" value="sarah@example.com">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="title" class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                        <input type="text" id="title" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent" value="Premium Member">
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label for="bio" class="block text-sm font-medium text-gray-700 mb-1">Bio</label>
+                        <textarea id="bio" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent">Professional photographer and image editing enthusiast</textarea>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" id="cancel-edit" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% include 'footer.html' %}
+    <script>
+        // Sample data
+        let monthlyChart, distributionChart;
+        let enhancedCount = 1248;
+        let removedCount = 892;
+        let addedCount = 567;
+        let storagePercent = 75;
+        
+        // Activity data
+        const activities = [
+            { 
+                type: 'enhance', 
+                title: 'Enhanced product photo', 
+                description: 'Improved resolution and color balance', 
+                time: '2 hours ago', 
+                icon: 'magic',
+                color: 'purple'
+            },
+            { 
+                type: 'remove', 
+                title: 'Removed background', 
+                description: 'From portrait for professional profile', 
+                time: '5 hours ago', 
+                icon: 'eraser',
+                color: 'blue'
+            },
+            { 
+                type: 'add', 
+                title: 'Added beach background', 
+                description: 'To vacation photo with perfect lighting match', 
+                time: 'Yesterday', 
+                icon: 'layer-group',
+                color: 'green'
+            },
+            { 
+                type: 'enhance', 
+                title: 'Enhanced low-light image', 
+                description: 'Improved visibility in dark areas', 
+                time: '2 days ago', 
+                icon: 'magic',
+                color: 'purple'
+            },
+            { 
+                type: 'remove', 
+                title: 'Removed complex background', 
+                description: 'From product image with multiple colors', 
+                time: '3 days ago', 
+                icon: 'eraser',
+                color: 'blue'
+            }
+        ];
+
+        // Initialize the page
+        function initPage() {
+            createCharts();
+            updateStats();
+            renderActivities();
+            setupModal();
+            setupImageUpload();
+            
+            // Simulate real-time updates every 5 seconds
+            setInterval(() => {
+                updateStats();
+                updateCharts();
+                addRandomActivity();
+            }, 5000);
+        }
+
+        // Set up the edit profile modal
+        function setupModal() {
+            const modal = document.getElementById('edit-profile-modal');
+            const editBtn = document.getElementById('edit-profile-btn');
+            const closeBtn = document.getElementById('close-modal');
+            const cancelBtn = document.getElementById('cancel-edit');
+            const form = document.getElementById('profile-form');
+            
+            // Open modal
+            editBtn.addEventListener('click', () => {
+                // Populate form with current data
+                document.getElementById('username').value = document.getElementById('current-username').textContent;
+                document.getElementById('title').value = document.getElementById('current-user-title').textContent;
+                modal.style.display = 'flex';
+            });
+            
+            // Close modal
+            function closeModal() {
+                modal.style.display = 'none';
+            }
+            
+            closeBtn.addEventListener('click', closeModal);
+            cancelBtn.addEventListener('click', closeModal);
+            
+            // Handle form submission
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                // Get form values
+                const username = document.getElementById('username').value;
+                const title = document.getElementById('title').value;
+                
+                // Update profile
+                document.getElementById('current-username').textContent = username;
+                document.getElementById('current-user-title').textContent = title;
+                
+                // Close modal
+                closeModal();
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+        }
+
+        // Set up profile image upload
+        function setupImageUpload() {
+            const fileInput = document.getElementById('profile-image-input');
+            const preview = document.getElementById('profile-image-preview');
+            const currentProfileImage = document.getElementById('current-profile-image');
+            
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = (event) => {
+                        preview.src = event.target.result;
+                        currentProfileImage.src = event.target.result;
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        // Create charts
+        function createCharts() {
+            // Monthly Usage Chart
+            const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+            monthlyChart = new Chart(monthlyCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [
+                        {
+                            label: 'Enhance',
+                            data: [45, 60, 75, 82, 78, 95],
+                            borderColor: '#5E35B1',
+                            backgroundColor: 'rgba(94, 53, 177, 0.05)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: '#fff',
+                            pointBorderColor: '#5E35B1',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: 'Remove BG',
+                            data: [30, 42, 55, 60, 50, 72],
+                            borderColor: '#1E88E5',
+                            backgroundColor: 'rgba(30, 136, 229, 0.05)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: '#fff',
+                            pointBorderColor: '#1E88E5',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: 'Add BG',
+                            data: [20, 35, 40, 48, 45, 60],
+                            borderColor: '#43A047',
+                            backgroundColor: 'rgba(67, 160, 71, 0.05)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: '#fff',
+                            pointBorderColor: '#43A047',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            titleFont: { size: 14 },
+                            bodyFont: { size: 12 },
+                            padding: 12,
+                            cornerRadius: 8
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                drawBorder: false
+                            },
+                            ticks: {
+                                stepSize: 20
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+
+            // Distribution Chart
+            const distributionCtx = document.getElementById('distributionChart').getContext('2d');
+            distributionChart = new Chart(distributionCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Enhance', 'Remove BG', 'Add BG'],
+                    datasets: [{
+                        data: [1248, 892, 567],
+                        backgroundColor: ['#5E35B1', '#1E88E5', '#43A047'],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            bodyFont: { size: 12 },
+                            padding: 12,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    let value = context.raw || 0;
+                                    let total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    let percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true
+                    }
+                }
+            });
+        }
+
+        // Update stats with animation
+        function updateStats() {
+            // Generate random changes
+            const enhancedChange = Math.floor(Math.random() * 20) - 5;
+            const removedChange = Math.floor(Math.random() * 15) - 5;
+            const addedChange = Math.floor(Math.random() * 15) - 5;
+            const storageChange = Math.floor(Math.random() * 5) - 2;
+            
+            // Calculate new values
+            enhancedCount += Math.max(enhancedChange, 0);
+            removedCount += Math.max(removedChange, 0);
+            addedCount += Math.max(addedChange, 0);
+            storagePercent = Math.min(Math.max(storagePercent + storageChange, 0), 100);
+            
+            // Calculate distribution percentages
+            const total = enhancedCount + removedCount + addedCount;
+            const enhancePercent = Math.round((enhancedCount / total) * 100);
+            const removePercent = Math.round((removedCount / total) * 100);
+            const addPercent = Math.round((addedCount / total) * 100);
+            
+            // Update DOM elements
+            animateValue('enhanced-count', parseInt(document.getElementById('enhanced-count').textContent.replace(/,/g, '')), enhancedCount, 1000);
+            animateValue('removed-count', parseInt(document.getElementById('removed-count').textContent.replace(/,/g, '')), removedCount, 1000);
+            animateValue('added-count', parseInt(document.getElementById('added-count').textContent.replace(/,/g, '')), addedCount, 1000);
+            
+            // Update percentage changes
+            updateChangeIndicator('enhanced-change', enhancedChange);
+            updateChangeIndicator('removed-change', removedChange);
+            updateChangeIndicator('added-change', addedChange);
+            
+            // Update storage
+            animateValue('storage-percent', parseInt(document.getElementById('storage-percent').textContent), storagePercent, 1000);
+            animateProgressBar('storage-bar', storagePercent, 1000);
+            
+            // Update distribution bars
+            animateValue('enhance-percent', parseInt(document.getElementById('enhance-percent').textContent), enhancePercent, 1000);
+            animateProgressBar('enhance-bar', enhancePercent, 1000);
+            
+            animateValue('remove-percent', parseInt(document.getElementById('remove-percent').textContent), removePercent, 1000);
+            animateProgressBar('remove-bar', removePercent, 1000);
+            
+            animateValue('add-percent', parseInt(document.getElementById('add-percent').textContent), addPercent, 1000);
+            animateProgressBar('add-bar', addPercent, 1000);
+        }
+
+        // Animate number changes
+        function animateValue(id, start, end, duration) {
+            const obj = document.getElementById(id);
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const value = Math.floor(progress * (end - start) + start);
+                obj.textContent = value.toLocaleString();
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // Animate progress bars
+        function animateProgressBar(id, endPercent, duration) {
+            const bar = document.getElementById(id);
+            const startPercent = parseInt(bar.style.width);
+            let startTimestamp = null;
+            
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const currentPercent = Math.floor(progress * (endPercent - startPercent) + startPercent);
+                bar.style.width = `${currentPercent}%`;
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // Update change indicators
+        function updateChangeIndicator(id, change) {
+            const element = document.getElementById(id);
+            if (change > 0) {
+                element.innerHTML = `<i class="fas fa-arrow-up mr-1"></i>${change}%`;
+                element.className = "text-xs px-2 py-1 rounded-full bg-green-50 text-green-600";
+            } else if (change < 0) {
+                element.innerHTML = `<i class="fas fa-arrow-down mr-1"></i>${Math.abs(change)}%`;
+                element.className = "text-xs px-2 py-1 rounded-full bg-red-50 text-red-600";
+            } else {
+                element.innerHTML = `<i class="fas fa-equals mr-1"></i>0%`;
+                element.className = "text-xs px-2 py-1 rounded-full bg-gray-50 text-gray-600";
+            }
+        }
+
+        // Update chart data
+        function updateCharts() {
+            // Update monthly chart data
+            monthlyChart.data.datasets.forEach(dataset => {
+                dataset.data = dataset.data.map(value => {
+                    const change = Math.floor(Math.random() * 10) - 3;
+                    return Math.max(value + change, 0);
+                });
+            });
+            monthlyChart.update();
+            
+            // Update distribution chart data
+            distributionChart.data.datasets[0].data = [enhancedCount, removedCount, addedCount];
+            distributionChart.update();
+        }
+
+        // Render initial activities
+        function renderActivities() {
+            const feed = document.getElementById('activity-feed');
+            feed.innerHTML = '';
+            
+            // Display last 3 activities
+            activities.slice(0, 3).forEach(activity => {
+                addActivityToFeed(activity);
+            });
+        }
+
+        // Add random activity
+        function addRandomActivity() {
+            const randomIndex = Math.floor(Math.random() * activities.length);
+            const activity = activities[randomIndex];
+            addActivityToFeed(activity);
+            
+            // Remove oldest activity if more than 3
+            const feed = document.getElementById('activity-feed');
+            if (feed.children.length > 3) {
+                feed.removeChild(feed.lastChild);
+            }
+        }
+
+        // Add activity to feed
+        function addActivityToFeed(activity) {
+            const feed = document.getElementById('activity-feed');
+            const activityElem = document.createElement('div');
+            activityElem.className = 'activity-item flex items-start p-3 rounded-lg bg-white shadow-xs border border-gray-100';
+            activityElem.innerHTML = `
+                <div class="w-10 h-10 rounded-lg bg-${activity.color}-50 flex items-center justify-center mr-3">
+                    <i class="fas fa-${activity.icon} text-${activity.color}-600"></i>
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-sm font-medium text-gray-800">${activity.title}</h4>
+                    <p class="text-xs text-gray-500">${activity.description}</p>
+                </div>
+                <span class="text-xs text-gray-400">${activity.time}</span>
+            `;
+            
+            // Add to top of feed
+            if (feed.firstChild) {
+                feed.insertBefore(activityElem, feed.firstChild);
+            } else {
+                feed.appendChild(activityElem);
+            }
+            
+            // Add animation
+            activityElem.style.opacity = '0';
+            activityElem.style.transform = 'translateY(-10px)';
+            activityElem.style.transition = 'all 0.3s ease';
+            
+            setTimeout(() => {
+                activityElem.style.opacity = '1';
+                activityElem.style.transform = 'translateY(0)';
+            }, 10);
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', initPage);
+    </script>
+</body>
+</html>
